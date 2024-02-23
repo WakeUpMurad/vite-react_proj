@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import logo from "/apple-logo.svg";
 import { styled } from "styled-components";
 import cl from "./Header.module.css"
@@ -16,7 +16,15 @@ const HeaderContainer = styled.header`
 export default function Header() {
   const [now, setNow] = useState(new Date());
 
-  setInterval(() => setNow(new Date(), 1000));
+  useEffect(() => {
+    const interval =  setInterval(() => setNow(new Date(), 1000));
+
+    return () => {
+      clearInterval(interval)
+    }
+  }, [])
+
+ 
 
   return (
     <HeaderContainer>

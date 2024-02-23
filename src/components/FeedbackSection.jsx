@@ -1,42 +1,61 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Button from "./UI/Button/Button";
 
+function StateVsRef() {
+    const [show, setShow] = useState(false)
+  const input = useRef()
+
+  const handleKeyDown = (event) => {
+    if(event.key === 'Enter') {
+        setShow(true)
+    }
+  }
+
+  return (
+    <div>
+      <h3>Input value: {show && input.current?.value} </h3>
+      <input type="text" className="control" ref={input} onKeyDown={handleKeyDown}/>
+    </div>
+  );
+}
+
 export default function FeedbackSection() {
-  const [name, setName] = useState("");
-  const [hasError, setHasError] = useState(false);
-  const [reason, setReason] = useState("help");
+  const [form, setForm] = useState({
+    name: "",
+    hasError: false,
+    reason: "help",
+  });
 
   const handleNameChange = (event) => {
-    setName(event.target.value);
-    setHasError(event.target.value.trim().length === 0)
+    setForm((prev) => ({
+      ...prev,
+      name: event.target.value,
+      hasError: event.target.value.trim().length === 0,
+    }));
   };
 
   const handleReasonChange = (event) => {
-    setReason(event.target.value);
+    setForm((prev) => ({
+      ...prev,
+      reason: event.target.value,
+    }));
   };
 
   const handleSubmit = () => {};
 
-  function toggleError() {
-    setHasError((prev) => {!prev})
-  }
-
   return (
     <section style={{ marginBottom: "1rem" }}>
       <h3>Обратная связь</h3>
-
-        <Button onClick={toggleError}>Toggle error</Button>
-
-      <form action="">
+      <form action="" style={{ marginBottom: "1rem" }}>
         <label htmlFor="name">Ваше имя</label>
         <input
           type="text"
           id="name"
           className="control"
-          value={name}
+          value={form.name}
           onChange={handleNameChange}
           style={{
-            border: hasError ? '1px solid red' : null,
+            border: form.hasError ? "1px solid red" : null,
           }}
         />
 
@@ -44,7 +63,7 @@ export default function FeedbackSection() {
         <select
           id="reason"
           className="control"
-          value={reason}
+          value={form.reason}
           onChange={handleReasonChange}
         >
           <option value="error">Ошибка</option>
@@ -53,13 +72,17 @@ export default function FeedbackSection() {
         </select>
 
         <pre>
-          Name: {name}
+          Name: {form.name}
           <br />
-          Reason: {reason}
+          Reason: {form.reason}
         </pre>
 
-        <Button onClick={handleSubmit} disabled={hasError || !name}>Отправить</Button>
+        <Button onClick={handleSubmit} disabled={form.hasError || !form.name}>
+          Отправить
+        </Button>
       </form>
+
+      <StateVsRef />
     </section>
   );
 }
